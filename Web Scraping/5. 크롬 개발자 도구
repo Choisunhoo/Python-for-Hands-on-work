@@ -1,0 +1,23 @@
+# 005 크롬 개발자 도구
+# requests 모듈을 불러온다. 그리고 bs4(beautifulsoup4) 라이브러리에서 BeautifulSoup 클래스를 불러온다
+import requests
+from bs4 import BeautifulSoup
+import sys
+import io
+
+# 응답 객체의 text 속성에서 HTML 소스코드를 추출하여 변수 html_src에 할당한다
+url = "https://en.wikipedia.org/wiki/Seoul_Metropolitan_Subway"
+resp = requests.get(url)
+html_src = resp.text
+
+# HTML 소스코드를 파싱하여 BeautifulSoup 객체를 생성하고 변수 soup에 할당한다.
+soup = BeautifulSoup(html_src, 'html.parser')
+
+# BeautifulSoup 클래스의 find() 메소드에 찾고자 하는 태그 이름('img')을 name 매개변수에 지정한다. 가장 처음으로 나타나는 <img> 태그 부분을 찾아서 출력한다.
+first_img = soup.find(name='img')
+print(first_img)
+print("\n")
+
+# find() 메소드의 attrs 매개변수에 {'속성 이름': '속성값'}의 딕셔너리 구조로 태그가 갖는 고유의 속성값을 지정한다. 지정한 속성값을 갖는 태그 중에서 가장 처음으로 나오는 태그를 찾느낟. 
+target_img = soup.find(name='img', attrs={'alt':'Seoul Metro 2000 series train on Line 2'})
+print(target_img)
