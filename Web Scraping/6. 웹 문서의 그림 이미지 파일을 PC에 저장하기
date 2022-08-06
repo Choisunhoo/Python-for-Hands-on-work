@@ -1,0 +1,38 @@
+# 006 웹 문서의 그림 이미지 파일을 PC에 저장하기
+# requests 모듈을 불러온다. 그리고 bs4(beautifulsoup4) 라이브러리에서 BeautifulSoup 클래스를 불러온다
+import requests
+from bs4 import BeautifulSoup
+import sys
+import io
+import os
+
+currentpath = os.getcwd()
+print(currentpath)
+
+# 응답 객체의 text 속성에서 HTML 소스코드를 추출하여 변수 html_src에 할당한다
+url = "https://en.wikipedia.org/wiki/Seoul_Metropolitan_Subway"
+resp = requests.get(url)
+html_src = resp.text
+
+# HTML 소스코드를 파싱하여 BeautifulSoup 객체를 생성하고 변수 soup에 할당한다.
+soup = BeautifulSoup(html_src, 'html.parser')
+
+
+# 저장된 객체에 find() 메소드를 적용하여 지하철 차량 사진을 나타내는 <img> 태그 부분을 찾아 변수 target_img에 저장한다
+target_img = soup.find(name='img', attrs={'alt':'Seoul Metro 2000 series train on Line 2'})
+print('HTML 요소: ', target_img)
+print("\n")
+
+# <img> 태그 정보를 갖고 있는 target_img  변수에 get('속성 이름') 메소드를 적용하면 속성이 갖는 값을 추출 할 수 있다. 속성 이름에 'src'를 전달하면, 'src' 속성값을 추출한다.
+target_img_src = target_img.get('src')
+print('이미지 파일 경로: ', target_img_src)
+print("\n")
+
+# 앞에서 추출한 이미지 파일 경로에 'http:'를 보완하고, requests 모듈의 get() 함수를 적용한다. 이미지 파일 경로에 GET 요청을 보내면, 이미지 파일을 담은 응답 객체를 target_img_resp 변수에 저장한다. 
+target_img_resp = requests.get('http:' + target_img_src)
+out_file_path = "c:\\Users\\User\\Desktop\\PythonWorkSpace\\output\\download_image.jpg"
+
+# target_img_resp 변수에 저장된 requests 응답 객체의 content 속성에는 이미지 파일이 바이너리 (binary) 형태로 저장되어 있다. write() 명령으로 저장 위치를 지정하여 외부 파일로 저장할 수 있다. 
+with open(out_file_path, 'wb') as out_file:
+    out_file.write(target_img_resp.content)
+    print("이미지 파일로 저장하였습니다.")
