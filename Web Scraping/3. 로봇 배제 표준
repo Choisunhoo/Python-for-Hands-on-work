@@ -1,0 +1,20 @@
+# 003 로봇 배제 표준(robots.txt)
+# requests 모듈을 불러온다
+import requests
+
+# 2개의 URL(네이버, 파이썬 공식 홈페이지)을 리스트에 담고, 변수 urls에 할당한다.
+urls = ["https://www.naver.com/", "https://www.python.org/"]
+# 로봇 배제 표준을 담고 있는 파일명("robots.txt")을 변수 filename에 할당한다.
+filename = "robots.txt"
+
+
+# 변수 urls에 들어 있는 URL들을 대상으로 for 반복문을 정의한다. 
+for url in urls: 
+    # robots.txt 파일의 이름을 각 웹사이트의 루트 URL과 결합하고, 결합한 파일 경로를 변수 file_path에 저장한다. 네이버의 경우 "https://www.naver.com/robots.txt" 와 같은 형태로 저장된다. 
+    file_path = url + filename
+    print(file_path)
+    # 웹서버에 GET요청을 보내고 웹 서버가 응답한 내용을 변수 resp에 저장한다 
+    resp = requests.get(file_path)
+    # 웹서버 응답 객체 text 속성은 HTML 소스를 저장하고 있다. print() 함수로 출력하면 각 사이트의 로봇 배제 표준의 내용을 볼 수 있다.
+    print(resp.text)
+    print("\n")
