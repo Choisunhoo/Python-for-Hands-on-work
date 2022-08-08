@@ -1,0 +1,33 @@
+# 008 CSS Selector 활용하기
+# requests 모듈을 불러온다. 그리고 bs4(beautifulsoup4) 라이브러리에서 BeautifulSoup 클래스를 불러온다
+import requests, re
+from bs4 import BeautifulSoup
+import sys
+import io
+import os
+
+currentpath = os.getcwd()
+print(currentpath)
+
+# 응답 객체의 text 속성에서 HTML 소스코드를 추출하여 변수 html_src에 할당한다
+url = "https://en.wikipedia.org/wiki/Seoul_Metropolitan_Subway"
+resp = requests.get(url)
+html_src = resp.text
+
+# HTML 소스코드를 파싱하여 BeautifulSoup 객체를 생성하고 변수 soup에 할당한다.
+soup = BeautifulSoup(html_src, 'html.parser')
+
+
+# 크롬 개발자 도구에서 Copy한 CSS선택자를 select() 메소드에 전달한다. select() 메소드가 리턴하는 객체를 변수 subway_image에 저장한다. 
+subway_image = soup.select('#mw-content-text > div.mw-parser-output > table:nth-child(7) > tbody > tr:nth-child(3) > td > a > img')
+# select() 메소드가 리턴하는 객체는 파이썬 리스트이다. subwat_image 변수를 print() 함수를 사용하여 출력해 보면 원소 1개 (<img> 태그)를 갖는다. 이 웹페이지에는 select() 메소드에 전달한 CSS 선택자가 가리키는 태그가 1개만 존재한다는 것을 알 수 있다. 
+print(subway_image)
+print("\n")
+# HTML 요소 (<img> 태그) 부분만을 따로 추출하려면 파이썬 리스트의 원소 인덱싱을 사용한다. 첫 번째 원소이므로 subway_image[0]과 같이 입력한다 
+print(subway_image[0])
+print("\n")
+
+# 앞서 사용한 '#mw-content-text > div.mw-parser-output > table:nth-child(7) > tbody > tr:nth-child(3) > td > a > img' 라는 CSS 선택자를 이용하여 같은 레벨에 잇는 다른 태그까지 한번에 선택할 수 있다. 'tr > td > a > img'와 같이 원본 CSS 선택자에서 태그 이름만 남겨서 select() 메소드에 입력한다. 
+subway_image2 = soup.select('tr > td > a > img')
+# select() 메소드가 리턴하는 객체는 파이썬 리스트이다.  앞에서 선택한 서울 지하철 차량 이미지는 리스트의 2번째 원소이다. 따라서 2번째 순서를 나타내는 인덱스인 subway_image2[1]과 같이 입력한다. 
+print(subway_image2[1])
