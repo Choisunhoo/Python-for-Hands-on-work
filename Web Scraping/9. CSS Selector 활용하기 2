@@ -1,0 +1,47 @@
+# 009 CSS Selector 활용하기 2
+# requests 모듈을 불러온다. 그리고 bs4(beautifulsoup4) 라이브러리에서 BeautifulSoup 클래스를 불러온다
+import requests, re
+from bs4 import BeautifulSoup
+import sys
+import io
+import os
+
+currentpath = os.getcwd()
+print(currentpath)
+
+# 응답 객체의 text 속성에서 HTML 소스코드를 추출하여 변수 html_src에 할당한다
+url = "https://en.wikipedia.org/wiki/Seoul_Metropolitan_Subway"
+resp = requests.get(url)
+html_src = resp.text
+
+# HTML 소스코드를 파싱하여 BeautifulSoup 객체를 생성하고 변수 soup에 할당한다.
+soup = BeautifulSoup(html_src, 'html.parser')
+
+# BeautifulSoup의 select() 메소드는 예제 007에서 설명한 find_all() 메소드와 비슷하다. 찾으려는 태그 이름을 매개변수로 전달하면, 웹 문서에서 해당하는 모든 태그를 찾아서 리스트 형태로 리턴하기 때문이다. 여기서는 <a> 태그를 모두 찾아서
+# 변수 links에 저장한다. len() 함수로 확인하면. links의 변수에 1219개의 원소가 들어 있다. 
+links = soup.select('a')
+print(len(links))
+print("\n")
+
+# 앞에서 3개의 원소의 리스트 슬라이싱 기법으로 선택하고 출력한다.
+print(links[:3])
+print("\n")
+
+# <a> 태그 중에서 class 속성을 갖고 그 값이 "external text"인 태그들을 찾아서 리스트로 리턴한다. 리스트 슬라이싱으로 앞에서 3개의 원소만을 선택적으로 출력한다. 
+external_links = soup.select('a[class="external text"]')
+print(external_links[:3])
+print("\n")
+
+# CSS의 id 선택자를 활용하는 방법이다. CSS 스타일 시트에서 id는 고유한 값을 갖기 때문에 select() 메소드에 id 선택자를 사용하면 오직 한 개의 태그만을 찾는다. id 선택자는 "#id속성값"으로 표현한다. 예제의 '#siteNotice'는 id 속성값이 "siteNotice"인 태그를 가르킨다
+id_selector = soup.select('#siteNotice')
+print(id_selector)
+print("\n")
+
+# CSS의 id 선택자를 사용할 때, 특정 태그 안에서만 id 선택자를 찾는 방법이다. 'div#siteNotice'는 div 태그 중에서 id 속성값이 "siteNotice"인 div 태그를 뜻한다. 결과는 앞과 같다 
+id_selector2 = soup.select('div#siteNotice')
+print(id_selector2)
+print("\n")
+
+# 'p#siteNotice'는 p 태그 중에서 id 속성값이 "siteNotice"인 p태그를 말한다. 현재 웹 문서에서 id 속성값이 "siteNotice"인 태그는 앞서 확인한 div 태그가 유일하다. 따라서 원소가 없는 빈 리스트가 출력된다. 
+id_selector3 = soup.select('p#siteNotice')
+print(id_selector3)
