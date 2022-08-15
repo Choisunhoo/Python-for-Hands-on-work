@@ -1,0 +1,74 @@
+# 011 구글 뉴스 클리핑하기 2
+# requests 모듈을 불러온다. 그리고 bs4(beautifulsoup4) 라이브러리에서 BeautifulSoup 클래스를 불러온다
+from bs4 import BeautifulSoup
+import urllib.parse
+import requests
+import sys
+import io
+import os
+
+currentpath = os.getcwd()
+print(currentpath)
+
+sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding = 'utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding = 'utf-8')
+
+# 구글 뉴스 검색어를 URL 코드 형식으로 인코딩 
+# urllib.parse의 모듈의 quote 메소드를 이용하면, 문자열을 URL 주소 형식에 맞도록 인코딩할 수 있다. '파이썬'이라는 한글 문자열을 URL 주소 형식으로 변환한 값을 변수 keyword에 저장한다. 
+keyword_input = '파이썬'
+keyword = urllib.parse.quote(keyword_input)
+print('파이썬 문자열을 URL 코드로 변환: ', keyword) 
+
+# 구글 뉴스 웹 페이지의 루트 디렉터리(https://news.google.com)를 base_url에 저장한다. 이를 통해서 문자열을 URL 주소 형식으로 바꾼 것과 같이 한글 검색어를 포함한 검색 결과 페이지의 URL을 조합하여 정의한다.
+base_url = "https://news.google.com"
+search_url = base_url + "/search?q=" + keyword + "&hl=ko&gl=KR&ceid=KR%3Ako"
+print('검색어와 조합된 URL: ', search_url)
+
+# 예제 010의 코드와 앞서 다룬 한글 검색어 URL 주소로 변환하는 코드를 사용하여, 구글 뉴스 검색어 (keyword_input)를 입력받아 그 결과를 리턴하는 함수를 정의한다.
+def google_news_clipping_keyword(keyword_input, limit=5):
+    
+    keyword = urllib.parse.quote(keyword_input)
+    
+    url =  base_url + "/search?q=" + keyword + "&hl=ko&gl=KR&ceid=KR%3Ako"
+    
+    resp = requests.get(url)
+    html_src = resp.text
+    soup = BeautifulSoup(html_src, 'html.parser')
+
+    news_items = soup.select('div[class="xrnccd"]')    
+    
+    links=[]; titles=[]; contents=[]; agencies=[]; reporting_dates=[]; reporting_times=[];
+    
+    for item in news_items[:limit]:
+        link = item.find('a', attrs={'class':'VDXfz'}).get('href')
+        news_link = base_url + link[1:]
+        links.append(news_link)
+        
+        news_title = item.find('a', attrs={'class':'DY5T1d'}).getText()
+        titles.append(news_title)
+        
+        news_agency = item.find('a', attrs={'class':'wEwyrc AVN2gc uQIVzc Sksgp slhocf'})
+        agencies.append(news_agency)
+        
+        news_reporting = item.find('time', attrs={'class':'WW6dff uQIVzc Sksgp slhocf'})
+        news_reporting_datetime = news_reporting.get('datetime').split('T')
+        news_reporting_date = news_reporting_datetime[0]
+        news_reporting_time = news_reporting_datetime[1][:-1]
+        reporting_dates.append(news_reporting_date)
+        reporting_times.append(news_reporting_time)
+        
+        
+    
+    result = {'links':links, 'title':titles, 'agency':agencies, 'data':reporting_dates, 'time':reporting_times}
+    
+    return result
+
+
+# 키보드로 입력받는 검색어 (search_word)와 검색하려는 뉴스의 최대 개수를 2개로 설정한다.
+search_word = input("검색어를 입력하세요: ")
+news = google_news_clipping_keyword(search_word, 2)
+# 뉴스 링크와 출처를 출력한다. 각각 원소 2개를 갖는 리스트 형태로 확인된다.
+print(news['links'])
+print(news['agency'])
+
+print(news)
