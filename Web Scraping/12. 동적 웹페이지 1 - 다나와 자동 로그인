@@ -1,0 +1,48 @@
+# 012 동적 웹페이지 1 - 다나와 자동 로그인
+# 라이브러리를 불러온다.
+from selenium import webdriver
+
+# webdriver 모듈의 Chrome 함수를 사용하여 크롬 웹드라이버를 실행하고 변수 driver에 저장한다.
+driver = webdriver.Chrome("./chromedriver")
+# 크롬 웹 드라이버를 로딩하기 위한 3초간 대기한다.
+driver.implicitly_wait(3)
+# get() 메소드를 이용하여 크롬 웹드라이버에서 다나와 웹 사이트를 실행한다 .
+driver.get("https://www.danawa.com/")
+
+# 다나와 메인화면의 로그인 버튼을 누르는 작업 실행한다.
+# div.item에 해당하는 HTML 요소를 찾아서 변수 login에 저장한다.
+login = driver.find_element_by_css_selector('div.item > a')
+# 태그명, 문자열, href속성값을 순차적으로 출력한다.
+print("HTML 요소: ", login)
+print("태그 이름: ", login.tag_name)
+print("문자열: ", login.text)
+print("href 속성: ", login.get_attribute('href'))
+
+# login객체에 click()메소드를 적용하여 크롬 웹 드라이버에 저장된 버튼을 클릭한다.
+login.click()
+# 새로운 웹 드라이버를 로딩하기 위한 3초간 대기한다.
+driver.implicitly_wait(3)
+
+# login_1이라는 객체에 로그인 화면으로 가는 요소를 저장 
+login_1 = driver.find_element_by_css_selector('div.user-recent__prod > a')
+# login_1객체에 click()메소드를 적용하여 크롬 웹 드라이버에 저장된 버튼을 클릭한다.
+login_1.click()
+# 새로운 웹 드라이버를 로딩하기 위한 3초간 대기한다.
+driver.implicitly_wait(3)
+
+# 아이디/ 비밀번호를 입력하고 로그인하기 버튼을 누르는 작업 실행
+my_id = " "
+my_password= " "
+
+# find_element_by_id() 메소드는 매개변수에 전달되는 id 속성값을 갖는 첫번째 HTML태그를 찾는다.
+# id 속성값이 'danawa-member-login-input-id'인 아이디 입력 필드에 해당하는 HTML 요소를 찾고 저장된 아이디를 send_keys() 메소드의 매게 변수로 전달한다.
+driver.find_element_by_id('danawa-member-login-input-id').send_keys(my_id)
+# 아이디가 입력되는 시간을 주기 위해 2초간 대기한다.
+driver.implicitly_wait(2)
+# find_element_by_name() 메소드는 매개변수로 전달된 name 속성값을 갖는 첫 번째 HTMl 태그를 찾는다.
+# 이를 활용하여 패스워드 입력 필드에 해당하는 HTML 요소를 찾고 저장된 패스워드를 send_keys() 메소드에 달한다.
+driver.find_element_by_name('password').send_keys(my_password)
+# 패스워드가 입력되는 시간을 주기 위해 2초간 대기한다.
+driver.implicitly_wait(2)
+# [로그인] 버튼에 해당하는 태그인 class 속성값 'btn_login' <button>태그에 click 메소드를 적용해서 버튼을 클릭하는 동작을 자동으로 처리한다.
+driver.find_element_by_css_selector('button.btn_login').click()
